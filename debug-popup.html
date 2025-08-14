@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Popup</title>
+  <link rel="stylesheet" href="dist/popup/popup.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    // Debug info
+    console.log('Root element:', document.getElementById('root'));
+    console.log('CSS loaded:', document.styleSheets.length > 0);
+    
+    // Try loading the popup script
+    const script = document.createElement('script');
+    script.src = 'dist/popup/popup.js';
+    script.onload = () => console.log('Script loaded');
+    script.onerror = (e) => console.error('Script failed to load', e);
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

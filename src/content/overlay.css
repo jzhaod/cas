@@ -1,0 +1,250 @@
+/* AI Shopping Assistant - Content Script Overlay Styles */
+
+/* Floating UI Container */
+.ai-shopping-overlay {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  width: 320px !important;
+  max-height: 400px !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  z-index: 2147483647 !important;
+  transform: translateY(-10px) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ai-shopping-overlay.visible {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Header */
+.ai-shopping-overlay .header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 20px 12px !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.ai-shopping-overlay .header .logo {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.ai-shopping-overlay .header .logo img {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.ai-shopping-overlay .header .title {
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
+  font-size: 16px !important;
+}
+
+.ai-shopping-overlay .header .close-btn {
+  width: 24px !important;
+  height: 24px !important;
+  border: none !important;
+  background: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 4px !important;
+  color: #666 !important;
+  transition: all 0.2s ease !important;
+}
+
+.ai-shopping-overlay .header .close-btn:hover {
+  background: #f5f5f5 !important;
+  color: #333 !important;
+}
+
+/* Content */
+.ai-shopping-overlay .content {
+  padding: 16px 20px 20px !important;
+}
+
+.ai-shopping-overlay .status {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+.ai-shopping-overlay .status-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: #10b981 !important;
+}
+
+.ai-shopping-overlay .status-dot.analyzing {
+  background: #f59e0b !important;
+  animation: pulse 2s infinite !important;
+}
+
+.ai-shopping-overlay .status-dot.negotiating {
+  background: #3b82f6 !important;
+  animation: pulse 2s infinite !important;
+}
+
+.ai-shopping-overlay .status-text {
+  font-weight: 500 !important;
+  color: #374151 !important;
+}
+
+/* Product Info */
+.ai-shopping-overlay .product-info {
+  background: #f8fafc !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  margin-bottom: 16px !important;
+}
+
+.ai-shopping-overlay .product-name {
+  font-weight: 500 !important;
+  color: #1f2937 !important;
+  margin-bottom: 4px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.ai-shopping-overlay .product-price {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #dc2626 !important;
+}
+
+/* Negotiation Progress */
+.ai-shopping-overlay .negotiation-progress {
+  margin-bottom: 16px !important;
+}
+
+.ai-shopping-overlay .progress-bar {
+  width: 100% !important;
+  height: 6px !important;
+  background: #e5e7eb !important;
+  border-radius: 3px !important;
+  overflow: hidden !important;
+  margin-bottom: 8px !important;
+}
+
+.ai-shopping-overlay .progress-fill {
+  height: 100% !important;
+  background: #3b82f6 !important;
+  border-radius: 3px !important;
+  transition: width 0.3s ease !important;
+}
+
+.ai-shopping-overlay .progress-text {
+  font-size: 12px !important;
+  color: #6b7280 !important;
+  text-align: center !important;
+}
+
+/* Action Buttons */
+.ai-shopping-overlay .actions {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 16px !important;
+}
+
+.ai-shopping-overlay .btn {
+  flex: 1 !important;
+  padding: 8px 16px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-align: center !important;
+  text-decoration: none !important;
+}
+
+.ai-shopping-overlay .btn-primary {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.ai-shopping-overlay .btn-primary:hover {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.ai-shopping-overlay .btn-secondary {
+  background: #ffffff !important;
+  color: #374151 !important;
+}
+
+.ai-shopping-overlay .btn-secondary:hover {
+  background: #f9fafb !important;
+  border-color: #9ca3af !important;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-shopping-overlay {
+    width: 280px !important;
+    right: 10px !important;
+    top: 10px !important;
+  }
+}
+
+/* Notification Toast */
+.ai-shopping-notification {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  background: #1f2937 !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 14px !important;
+  z-index: 2147483648 !important;
+  transform: translateY(10px) !important;
+  opacity: 0 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ai-shopping-notification.show {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+.ai-shopping-notification.success {
+  background: #10b981 !important;
+}
+
+.ai-shopping-notification.error {
+  background: #ef4444 !important;
+}
