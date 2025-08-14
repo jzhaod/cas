@@ -1,36 +1,40 @@
-# AI Shopping Assistant - Browser Extension
+# Clean Amazon Search - Chrome Extension
 
-A revolutionary browser extension that uses AI agents to automatically negotiate better prices on Amazon through the Model Context Protocol (MCP).
+A Chrome browser extension that provides AI-powered shopping assistance and search result filtering on Amazon. Clean up your Amazon browsing experience by filtering out sponsored content, low-rated products, and unwanted items.
 
 ## 🚀 Features
 
-- **AI-Powered Negotiation**: CrewAI agents negotiate with seller agents for better prices
-- **Non-Intrusive Interface**: Floating UI that doesn't interfere with Amazon's design
-- **Real-Time Updates**: Live negotiation status and deal notifications
-- **Session Persistence**: Negotiations continue across browser restarts
-- **Privacy-First**: Local processing with configurable data retention
-- **Multi-LLM Support**: OpenAI, Anthropic, and local model integration
+- **Sponsored Content Filtering**: Automatically hide sponsored products and ads
+- **Rating-Based Filtering**: Filter products by minimum star rating
+- **Review Count Filtering**: Hide products with insufficient reviews
+- **Prime Status Filtering**: Show only Prime eligible items
+- **Stock Status Filtering**: Filter out-of-stock products
+- **Real-Time Statistics**: Track how many items are filtered with badge counter
+- **Per-Page Toggle**: Disable filtering on specific pages when needed
 
 ## 🏗️ Architecture
 
-### Core Components
+The project uses **two parallel architectures** - a simplified version (currently active) and a full-featured version:
 
-- **Background Service Worker**: Orchestrates negotiations and manages sessions
-- **Content Scripts**: Monitor Amazon pages and inject UI elements
-- **MCP Client**: Communicates with seller agents using standard protocol
-- **CrewAI Integration**: AI-powered decision making and strategy
-- **Discovery Service**: Finds available seller agents
-- **Storage Manager**: Handles persistent data and settings
+### Current Architecture (Simplified)
+- **Background Service Worker**: `service-worker-simple.ts` - Minimal background processing
+- **Content Scripts**: `amazon-filter.ts` - Real-time DOM filtering with MutationObserver
+- **Popup UI**: `popup-simple.tsx` - Basic settings and statistics interface
+- **Storage Management**: Chrome storage API for settings sync
+
+### Available Architecture (Full-Featured)
+- **Advanced Service Worker**: `service-worker.ts` - Full MCP/CrewAI integration
+- **Complete Dashboard**: `popup.tsx` - Comprehensive UI with tabbed interface
+- **AI Integration**: MCP client, AI agents, session management
 
 ### Technology Stack
 
 - **TypeScript**: Type-safe development
-- **React**: UI components
+- **React**: UI components and popup interface
 - **Webpack**: Build system and bundling
-- **MCP Protocol**: Standardized AI agent communication
-- **CrewAI**: Multi-agent AI orchestration
-- **IndexedDB**: Client-side storage
-- **Chrome Extensions API**: Browser integration
+- **Chrome Extensions API v3**: Service worker architecture
+- **CSS/SCSS**: Responsive styling
+- **Jest**: Testing framework
 
 ## 📦 Installation
 
@@ -38,8 +42,8 @@ A revolutionary browser extension that uses AI agents to automatically negotiate
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/ai-shopping-assistant/browser-extension.git
-   cd browser-extension
+   git clone https://github.com/jzhaod/cas.git
+   cd cas
    ```
 
 2. **Install dependencies**:
@@ -47,22 +51,22 @@ A revolutionary browser extension that uses AI agents to automatically negotiate
    npm install
    ```
 
-3. **Configure environment**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys and configuration
-   ```
-
-4. **Start development server**:
+3. **Start development build**:
    ```bash
    npm run dev
    ```
 
-5. **Load extension in Chrome**:
+4. **Load extension in Chrome**:
    - Open `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked"
    - Select the `dist` folder
+   - Extension should now appear in your browser
+
+5. **Test on Amazon**:
+   - Visit any Amazon search page
+   - Filtering should work immediately
+   - Check extension badge for filtered item count
 
 ### Production Build
 
@@ -76,43 +80,38 @@ A revolutionary browser extension that uses AI agents to automatically negotiate
    npm run package
    ```
 
-3. **Install packaged extension**:
-   - Use the `.zip` file from the `packages` folder
-   - Or load the `dist` folder directly
+3. **Load the extension**:
+   - Use the generated `dist` folder for unpacked loading
+   - Or use the `.zip` file for distribution
 
 ## 🛠️ Development
 
 ### Available Scripts
 
 ```bash
-# Development
-npm run dev              # Start development server with file watching
-npm run watch            # Build and watch for changes
+# Development workflow
+npm run dev              # Development build with file watching
+npm run build            # Production build for extension loading
 npm run build:dev        # Development build without optimization
 
-# Production
-npm run build            # Production build
-npm run package          # Create extension package
-
-# Code Quality
-npm run type-check       # TypeScript type checking
-npm run lint             # ESLint code linting
+# Code quality
+npm run type-check       # TypeScript validation
+npm run lint             # ESLint checking
 npm run lint:fix         # Auto-fix linting issues
-npm run format           # Prettier code formatting
+npm run format           # Prettier formatting
 
 # Testing
-npm run test             # Run unit tests
-npm run test:watch       # Watch mode testing
+npm run test             # Run Jest unit tests
+npm run test:watch       # Jest watch mode
 npm run test:coverage    # Generate coverage report
 
-# Utilities
-npm run clean            # Clean build directories
-npm run analyze          # Bundle size analysis
+# Extension packaging
+npm run package          # Create .zip for Chrome Web Store
 ```
 
 ### Development Workflow
 
-1. **Start the development server**:
+1. **Start the development build**:
    ```bash
    npm run dev
    ```
@@ -121,118 +120,130 @@ npm run analyze          # Bundle size analysis
 
 3. **Reload the extension** in Chrome after each build
 
-4. **Test on Amazon** - browse products to trigger negotiations
+4. **Test on Amazon** - visit Amazon search pages to see filtering in action
+
+5. **Check the console** - look for filter statistics and debugging info
 
 ### Code Structure
 
 ```
 src/
-├── background/          # Service worker and core logic
-│   ├── service-worker.ts     # Main orchestration
-│   ├── mcp-client.ts         # MCP protocol client
-│   ├── crew-ai-agent.ts      # AI decision making
-│   ├── discovery-client.ts   # Seller discovery
-│   ├── session-manager.ts    # Session persistence
-│   └── storage-manager.ts    # Data management
-├── content/             # Amazon page integration
-│   ├── amazon-monitor.ts     # Main content script
-│   ├── product-detector.ts   # Product information extraction
-│   └── ui-injector.ts        # UI element injection
-├── popup/               # Extension popup interface
-│   ├── popup.tsx            # Main popup app
-│   └── components/          # React components
-├── options/             # Settings page
-├── shared/              # Shared utilities and types
-│   └── types/              # TypeScript definitions
+├── background/              # Service worker implementations
+│   ├── service-worker-simple.ts    # Current: minimal background processing
+│   ├── service-worker.ts           # Full: MCP/CrewAI integration
+│   ├── mcp-client.ts              # MCP protocol client
+│   ├── crew-ai-agent.ts           # AI decision making
+│   └── storage-manager.ts         # Settings and data management
+├── content/                 # Amazon page integration
+│   ├── amazon-filter.ts           # Main filtering logic with DOM monitoring
+│   ├── amazon-monitor.ts          # Page monitoring (unused in simple)
+│   ├── product-detector.ts        # Product information extraction
+│   └── ui-injector.ts             # UI element injection
+├── popup/                   # Extension popup interface
+│   ├── popup-simple.tsx           # Current: basic UI with settings
+│   ├── popup.tsx                  # Full: comprehensive dashboard
+│   └── components/                # React components (Settings, Dashboard)
+├── shared/                  # Shared utilities and types
+│   └── types/index.ts             # TypeScript definitions
+├── options/                 # Extension options page (optional)
+└── public/                  # Static assets and icons
 ```
 
 ## 🔧 Configuration
 
-### Environment Variables
-
-Create a `.env` file (see `.env.example`):
-
-```env
-# API Configuration (Local Development)
-DISCOVERY_API_URL=http://localhost:8002
-OPENAI_API_KEY=your_openai_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
-
-# Development Settings
-NODE_ENV=development
-ENABLE_DEBUG_LOGGING=true
-```
-
 ### Extension Settings
 
-Configure through the extension popup or options page:
+Configure through the extension popup interface:
 
-- **AI Provider**: OpenAI, Anthropic, or local models
-- **Negotiation Rounds**: Maximum rounds per negotiation
-- **Auto-Accept Threshold**: Automatically accept deals above X% savings
-- **Privacy Mode**: Control data collection and retention
+- **Sponsored Content Filtering**: Hide sponsored products and ads
+- **Minimum Star Rating**: Filter products below specified rating (1-5 stars)
+- **Minimum Review Count**: Hide products with insufficient reviews
+- **Prime Only**: Show only Prime eligible items
+- **Hide Out of Stock**: Filter unavailable products
+- **Per-Page Toggle**: Disable filtering on specific Amazon pages
 
-## 🤝 Integration
+### Architecture Switching
 
-### Seller Integration
-
-Sellers can integrate by implementing MCP servers with these tools:
-
-```typescript
-// Required MCP tools
-- initiateNegotiation(productId, sessionId, buyerContext)
-- makeOffer(sessionId, offerType, offerDetails)
-- getProductInfo(productId, infoType)
-- acceptDeal(sessionId, finalTerms)
-```
-
-### Discovery Service
-
-Register seller endpoints:
-
-```bash
-POST /api/sellers/register
-{
-  "sellerName": "Your Store",
-  "mcpEndpoint": "wss://your-store.com/mcp",
-  "capabilities": ["initiateNegotiation", "makeOffer", "acceptDeal"],
-  "specialties": ["electronics", "home_garden"]
+To switch between simplified and full architecture, modify `webpack.config.js` entry points:
+```javascript
+// Lines 17 & 23 - Switch between architectures
+entry: {
+  'service-worker': './src/background/service-worker-simple.ts',  // or service-worker.ts
+  popup: './src/popup/popup-simple.tsx',                        // or popup.tsx
 }
 ```
+
+### Storage
+
+- **Chrome Sync Storage**: User preferences synced across devices
+- **Chrome Local Storage**: Session data and statistics
+- **Settings Helper**: Use `updateAmazonPreference(key, value)` for nested updates
+
+## 🔍 How It Works
+
+### Filter Detection
+
+The extension uses comprehensive selectors to detect and hide:
+
+```typescript
+// Sponsored content detection (30+ selectors)
+const sponsoredSelectors = [
+  '[data-component-type="sp-sponsored-result"]',
+  '.AdHolder',
+  '.s-sponsored-list-item',
+  // ... and many more
+];
+
+// Product information extraction
+const extractProductInfo = (element) => ({
+  rating: parseFloat(element.querySelector('.a-icon-alt')?.textContent),
+  reviewCount: parseInt(element.querySelector('.a-size-base')?.textContent),
+  primeEligible: !!element.querySelector('.a-icon-prime'),
+  inStock: !element.querySelector('.a-color-state.a-text-bold')
+});
+```
+
+### Real-Time Monitoring
+
+- **MutationObserver**: Watches for new content and applies filters instantly
+- **Badge Updates**: Shows filtered item count in extension badge
+- **Statistics Tracking**: Logs filtering activity for debugging
 
 ## 🔒 Privacy & Security
 
 ### Data Handling
 
-- **Local Processing**: All negotiations happen locally when possible
-- **Minimal Data Collection**: Only essential data for negotiations
-- **User Control**: Full control over data sharing and retention
-- **Encryption**: All communications encrypted in transit
+- **Local Processing**: All filtering happens locally in the browser
+- **No External Requests**: No data sent to external servers
+- **Minimal Storage**: Only user preferences and anonymous statistics
+- **Chrome Storage**: Uses Chrome's secure storage APIs
 
 ### Security Features
 
-- **API Key Security**: Keys stored securely in extension storage
-- **Session Validation**: All negotiation sessions validated
-- **Input Sanitization**: All user inputs sanitized
-- **HTTPS Only**: All external communications use HTTPS/WSS
+- **Content Security Policy**: CSP-compliant build with no eval or inline scripts
+- **Manifest v3**: Uses latest Chrome extension architecture
+- **Host Permissions**: Limited to Amazon domains only
+- **Input Sanitization**: All DOM interactions sanitized
 
-## 📊 Monitoring
+## 📊 Monitoring & Debugging
 
-### Built-in Analytics
+### Built-in Statistics
 
-- **Negotiation Success Rate**: Track deal completion rates
-- **Average Savings**: Monitor savings per negotiation
-- **Performance Metrics**: Response times and error rates
-- **User Behavior**: Anonymous usage patterns
+- **Badge Counter**: Shows number of filtered items on current page
+- **Filter Statistics**: Tracks what types of items are being hidden
+- **Console Logging**: Detailed filtering activity in browser console
+- **Performance Metrics**: Filter processing time and efficiency
 
 ### Debug Information
 
-Enable debug logging in development:
+Check browser console on Amazon pages for detailed logs:
 
-```bash
-# Set in .env
-ENABLE_DEBUG_LOGGING=true
-LOG_LEVEL=debug
+```javascript
+// Look for these log prefixes
+🔧 Filter: Item processing information
+🚫 Hidden: Items that were filtered out  
+🔍 Stats: Filtering statistics and counts
+⚡ Performance: Processing time metrics
 ```
 
 ## 🧪 Testing
@@ -247,20 +258,19 @@ npm run test:coverage     # Coverage report
 
 ### Manual Testing
 
-1. **Load the extension** in development mode
-2. **Visit Amazon product pages** 
-3. **Trigger negotiations** by showing interest in products
-4. **Monitor console logs** for debug information
-5. **Test different scenarios** (high-value items, different sellers)
+1. **Load the extension** in development mode (`npm run build` → load `dist/` folder)
+2. **Visit Amazon search pages** (e.g., search for "laptops")
+3. **Check filtering** - sponsored items should be hidden automatically
+4. **Adjust settings** - change rating filter and see results update
+5. **Monitor console** - look for filter statistics and debug information
+6. **Test badge counter** - extension badge should show number of hidden items
 
-### Test Environment
+### Testing Specific Features
 
-Use test seller endpoints for development:
-
-```env
-TEST_SELLER_ENDPOINT=wss://demo-seller.example.com/mcp
-TEST_MODE=true
-```
+- **Sponsored filtering**: Search for popular items, check for sponsored content removal
+- **Rating filter**: Set minimum 4+ stars, verify low-rated items are hidden
+- **Prime filter**: Enable Prime-only, check non-Prime items are filtered
+- **Per-page toggle**: Disable filtering on a page, verify items reappear
 
 ## 🚢 Deployment
 
@@ -268,97 +278,108 @@ TEST_MODE=true
 
 1. **Build production version**:
    ```bash
-   npm run build --production
+   npm run build
    npm run package
    ```
 
-2. **Upload to Chrome Web Store**:
-   - Use the `.zip` file from `packages/` folder
-   - Follow Chrome Web Store submission guidelines
+2. **Prepare for submission**:
+   - Use the `.zip` file generated by `npm run package`
+   - Ensure all required icons are present in `public/icons/`
+   - Verify manifest.json has proper descriptions and permissions
 
-3. **Update manifest** for store requirements:
-   - Remove development permissions
-   - Add store-specific metadata
-   - Include proper icons and descriptions
+3. **Chrome Web Store submission**:
+   - Create developer account at [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/developer/dashboard)
+   - Upload the packaged extension
+   - Fill out store listing with screenshots and descriptions
+   - Submit for review
 
-### Self-Hosted Distribution
+### Development Distribution
 
-1. **Build and package**:
+1. **Build for local testing**:
    ```bash
-   npm run package
+   npm run build
    ```
 
-2. **Distribute the `.crx` file** or unpacked extension
+2. **Share unpacked extension**:
+   - Share the `dist/` folder
+   - Users load via "Load unpacked" in developer mode
 
-3. **Update URLs** in manifest for auto-updates
+### Key Files for Distribution
+- `manifest.json` - Extension metadata and permissions
+- `public/icons/` - Extension icons (16, 32, 48, 128px)
+- `dist/` - Compiled extension files
 
 ## 🤝 Contributing
 
 1. **Fork the repository**
-2. **Create feature branch**: `git checkout -b feature/amazing-feature`
+2. **Create feature branch**: `git checkout -b feature/new-filter`
 3. **Make changes** and add tests
 4. **Run quality checks**: `npm run lint && npm run type-check && npm run test`
-5. **Commit changes**: `git commit -m 'Add amazing feature'`
-6. **Push to branch**: `git push origin feature/amazing-feature`
+5. **Commit changes**: `git commit -m 'Add new filter feature'`
+6. **Push to branch**: `git push origin feature/new-filter`
 7. **Open Pull Request**
 
 ### Development Guidelines
 
-- **TypeScript**: Use strict typing
+- **TypeScript**: Use strict typing for all components
 - **Code Style**: Follow ESLint and Prettier configuration
-- **Testing**: Add tests for new features
-- **Documentation**: Update README and inline comments
-- **Performance**: Consider extension performance impact
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- **Testing**: Add tests for filtering logic and UI components
+- **Documentation**: Update README and add inline comments
+- **Performance**: Minimize DOM queries and optimize filter processing
+- **Settings**: Use `updateAmazonPreference()` helper for settings updates
 
 ## 🙋‍♂️ Support
 
 ### Getting Help
 
-- **GitHub Issues**: Bug reports and feature requests
-- **Documentation**: Check README and inline code comments
-- **Discussions**: Community discussions and Q&A
+- **GitHub Issues**: Bug reports and feature requests at [github.com/jzhaod/cas](https://github.com/jzhaod/cas)
+- **Documentation**: Check README and CLAUDE.md for implementation details
+- **Console Debugging**: Check browser console for filtering debug information
 
 ### Common Issues
 
 **Extension not loading**:
-- Check console for errors
-- Verify manifest.json is valid
-- Ensure all required files are built
+- Run `npm run build` to generate `dist/` folder
+- Check that all files are present in `dist/`
+- Verify manifest.json is valid JSON
+- Enable Developer mode in Chrome extensions
 
-**Negotiations not starting**:
-- Check AI API keys in settings
-- Verify discovery service connection
-- Review console logs for errors
+**Filtering not working**:
+- Check browser console for error messages
+- Verify you're on Amazon search or product pages
+- Try refreshing the page after changing settings
+- Check if extension badge shows filtered item count
+
+**Settings not saving**:
+- Use `updateAmazonPreference(key, value)` helper function
+- Avoid using `updateSetting('amazonPreferences', {...})`
+- Check Chrome storage permissions in manifest
 
 **Build failures**:
-- Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
+- Clear cache: `rm -rf node_modules && npm install`
 - Check Node.js version (>=16 required)
-- Verify all environment variables are set
+- Verify TypeScript compilation: `npm run type-check`
 
 ## 🔮 Roadmap
 
-### v1.1 - Enhanced Features
+### v1.1 - Enhanced Filtering
+- [ ] Price range filtering
+- [ ] Brand filtering with whitelist/blacklist
+- [ ] Seller rating filtering
+- [ ] Shipping speed filtering
+
+### v1.2 - UI Improvements
+- [ ] Visual filter indicators on Amazon pages
+- [ ] Advanced settings with presets
+- [ ] Better mobile extension support
+- [ ] Dark mode for popup interface
+
+### v1.3 - Advanced Features
 - [ ] Multi-marketplace support (eBay, Walmart)
-- [ ] Advanced negotiation strategies
-- [ ] Seller reputation system
-- [ ] Mobile extension support
-
-### v1.2 - AI Improvements
-- [ ] Learning from negotiation outcomes
-- [ ] Personalized negotiation strategies
-- [ ] Predictive pricing models
-- [ ] Natural language negotiation summaries
-
-### v1.3 - Enterprise Features
-- [ ] Team/organization accounts
-- [ ] Bulk negotiation workflows
-- [ ] Advanced analytics dashboard
-- [ ] API for third-party integrations
+- [ ] Wishlist integration
+- [ ] Price tracking and alerts
+- [ ] Export filtering statistics
 
 ---
 
-**Built with ❤️ by the AI Shopping Assistant Team**
+**Built with ❤️ for cleaner Amazon browsing**
